@@ -1,23 +1,27 @@
 package com.example.demo.user;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/user")
-@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
 
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
-    @PostMapping("/signup") // Post User
+    @PostMapping("/signup") // Post user
     public void saveUser(@RequestBody UserCreateRequest userCreateRequest) {
         userService.saveUser(userCreateRequest);
     }
 
-
+    @GetMapping("/list")  // Get user list
+    public List<UserListResponse> getUsers() {
+        return userService.getUsers();
+    }
 }
