@@ -24,4 +24,9 @@ public class UserController {
     public List<UserListResponse> getUsers() {
         return userService.getUsers();
     }
+
+    @PutMapping("/update")
+    public void updateUser(@RequestBody UserUpdateRequest userUpdateRequest) {
+        userService.updateUser(userUpdateRequest);
+    }
 }

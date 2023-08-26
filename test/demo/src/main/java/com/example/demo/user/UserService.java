@@ -24,4 +24,10 @@ public class UserService {
         // 이 컬렉션을 UserListResponse 객체의 리스트로 매핑해야하고 이를 위해 UserEntity 객체를 사용하는 생성자 필요함
         return userRepository.findAll().stream().map(UserListResponse::new).collect(Collectors.toList());
     }
+
+    public void updateUser(UserUpdateRequest userUpdateRequest) {
+        UserEntity userEntity = userRepository.findById(userUpdateRequest.getId()).orElseThrow(IllegalArgumentException::new);
+        userEntity.updateUserInfo(userUpdateRequest.getEmail(), userUpdateRequest.getPassword());
+        userRepository.save(userEntity);
+    }
 }
