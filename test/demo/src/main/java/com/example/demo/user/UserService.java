@@ -30,4 +30,13 @@ public class UserService {
         userEntity.updateUserInfo(userUpdateRequest.getEmail(), userUpdateRequest.getPassword());
         userRepository.save(userEntity);
     }
+
+    public void deleteUser(String email){
+        UserEntity userEntity = userRepository.findByEmail(email);
+        if (userEntity == null) {
+            throw new IllegalArgumentException();
+        }
+
+        userRepository.delete(userEntity);
+    }
 }
