@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 
 @Entity
+@Getter
 @Table(name = "user")
 public class UserEntity {
 
@@ -36,17 +37,5 @@ public class UserEntity {
     public void updateUserInfo(String email, String password) {
         this.email = email;
         this.password = password;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPassword() {
-        return password;
     }
 }

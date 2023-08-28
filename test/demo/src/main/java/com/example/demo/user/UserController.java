@@ -1,6 +1,7 @@
 package com.example.demo.user;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,15 +17,14 @@ public class UserController {
     }
 
     @PostMapping("/signup") // Post user
-    public void saveUser(@RequestBody UserCreateRequest userCreateRequest) {
+    public ResponseEntity<String> saveUser(@RequestBody UserCreateRequest userCreateRequest) {
         userService.saveUser(userCreateRequest);
+        return ResponseEntity.ok("회원가입 성공");
     }
-
     @GetMapping("/list")  // Get user list
-    public List<UserListResponse> getUsers() {
-        return userService.getUsers();
+    public ResponseEntity<List<UserListResponse>> getUsers() {
+        return ResponseEntity.ok().body(userService.getUsers());
     }
-
     @PutMapping("/update")
     public void updateUser(@RequestBody UserUpdateRequest userUpdateRequest) {
         userService.updateUser(userUpdateRequest);
