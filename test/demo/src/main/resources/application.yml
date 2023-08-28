@@ -4,9 +4,9 @@ spring:
     #    종류는 mysql
     #    그리고 디비는 로컬호스트에 있고
     #    사용할 디비는 라이브러리
-    url: "jdbc:mysql://localhost:3306/mydb"
-    username: "ssafy"
-    password: "ssafy"
+    url: "jdbc:mysql://localhost/user_test"
+    username: "root"
+    password: "1234"
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
