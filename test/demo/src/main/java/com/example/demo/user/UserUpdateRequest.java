@@ -1,5 +1,8 @@
 package com.example.demo.user;
 
+import lombok.Data;
+
+@Data
 public class UserUpdateRequest {
 
     private long id;
@@ -7,16 +10,4 @@ public class UserUpdateRequest {
     private String email;
 
     private String password;
-
-    public long getId() {
-        return id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
 }
