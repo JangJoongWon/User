@@ -1,21 +1,26 @@
 package com.example.demo.user;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
+@Transactional
 public class UserService {
 
     private final UserRepository userRepository;
 
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
     public void saveUser(UserCreateRequest userCreateRequest) {
-        userRepository.save(new UserEntity(userCreateRequest.getEmail(), userCreateRequest.getPassword()));
+        String email = userCreateRequest.getEmail();
+        String password = userCreateRequest.getPassword();
+
+        UserEntity userEntity = new UserEntity(email, password);
+
+        userRepository.save(userEntity);
     }
 
     public List<UserListResponse> getUsers() {
@@ -26,13 +31,19 @@ public class UserService {
     }
 
     public void updateUser(UserUpdateRequest userUpdateRequest) {
-        UserEntity userEntity = userRepository.findById(userUpdateRequest.getId()).orElseThrow(IllegalArgumentException::new);
-        userEntity.updateUserInfo(userUpdateRequest.getEmail(), userUpdateRequest.getPassword());
-        userRepository.save(userEntity);
+        Long userId = userUpdateRequest.getUserId();
+
+        UserEntity userEntity = userRepository.findById(userId).orElseThrow(IllegalArgumentException::new);
+
+        String email = userUpdateRequest.getEmail();
+        String password = userUpdateRequest.getPassword();
+
+        userEntity.updateUserInfo(email, password);
     }
 
     public void deleteUser(String email){
         UserEntity userEntity = userRepository.findByEmail(email);
+
         if (userEntity == null) {
             throw new IllegalArgumentException();
         }

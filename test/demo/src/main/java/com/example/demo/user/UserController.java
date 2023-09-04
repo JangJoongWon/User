@@ -7,31 +7,30 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/user")
+@RequiredArgsConstructor
+@RequestMapping("/api/v1/user")
 public class UserController {
 
     private final UserService userService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
-
     @PostMapping("/signup") // Post user
     public ResponseEntity<String> saveUser(@RequestBody UserCreateRequest userCreateRequest) {
         userService.saveUser(userCreateRequest);
-        return ResponseEntity.ok("회원가입 성공");
+        return ResponseEntity.ok("회원가입");
     }
     @GetMapping("/list")  // Get user list
     public ResponseEntity<List<UserListResponse>> getUsers() {
         return ResponseEntity.ok().body(userService.getUsers());
     }
     @PutMapping("/update")
-    public void updateUser(@RequestBody UserUpdateRequest userUpdateRequest) {
+    public ResponseEntity<String> updateUser(@RequestBody UserUpdateRequest userUpdateRequest) {
         userService.updateUser(userUpdateRequest);
+        return ResponseEntity.ok("회원수정");
     }
 
     @DeleteMapping("/delete")
-    public void deleteUser(@RequestParam String email) {
+    public ResponseEntity<String> deleteUser(@RequestParam String email) {
         userService.deleteUser(email);
+        return ResponseEntity.ok("회원탈퇴");
     }
 }
