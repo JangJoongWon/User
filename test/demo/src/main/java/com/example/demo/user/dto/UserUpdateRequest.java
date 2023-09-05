@@ -1,11 +1,9 @@
-package com.example.demo.user;
+package com.example.demo.user.dto;
 
 import lombok.Data;
 
 @Data
 public class UserUpdateRequest {
 
-    private long userId;
-    private String email;
     private String password;
 }

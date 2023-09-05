@@ -36,8 +36,7 @@ public class UserEntity {
         this.password = password;
     }
 
-    public void updateUserInfo(String email, String password) {
-        this.email = email;
+    public void updateUserInfo(String password) {
         this.password = password;
     }
 }
