@@ -1,6 +1,12 @@
 package com.example.demo.user;
 
+import com.example.demo.config.Jwt.JwtUtil;
+import com.example.demo.user.dto.UserCreateRequest;
+import com.example.demo.user.dto.UserListResponse;
+import com.example.demo.user.dto.UserLoginRequest;
+import com.example.demo.user.dto.UserUpdateRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,14 +19,42 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder encoder;
+
+    private String secretKey = "secretKey";
+    private Long expireTimeMs = 1000 * 60 * 60l * 5; // 토큰 만료시간 : 5시간
 
     public void saveUser(UserCreateRequest userCreateRequest) {
         String email = userCreateRequest.getEmail();
         String password = userCreateRequest.getPassword();
 
-        UserEntity userEntity = new UserEntity(email, password);
+        // email 중복 검사
+        userRepository.findByEmail(email)
+                .ifPresent(userEntity -> {
+                    throw new RuntimeException();
+                });
+
+        UserEntity userEntity = new UserEntity(email, encoder.encode(password));
 
         userRepository.save(userEntity);
+    }
+
+    public String login(UserLoginRequest userLoginRequest) {
+        String email = userLoginRequest.getEmail();
+        String password = userLoginRequest.getPassword();
+
+        // email 존재 검사
+        UserEntity userEntity = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException());
+
+        // password 확인
+        if (!encoder.matches(password, userEntity.getPassword())) {
+            throw new RuntimeException();
+        }
+
+        String token = JwtUtil.createToken(userEntity.getUserId(), secretKey, expireTimeMs);
+
+        return token;
     }
 
     public List<UserListResponse> getUsers() {
@@ -30,23 +64,20 @@ public class UserService {
         return userRepository.findAll().stream().map(UserListResponse::new).collect(Collectors.toList());
     }
 
-    public void updateUser(UserUpdateRequest userUpdateRequest) {
-        Long userId = userUpdateRequest.getUserId();
-
-        UserEntity userEntity = userRepository.findById(userId).orElseThrow(IllegalArgumentException::new);
-
-        String email = userUpdateRequest.getEmail();
+    public void updateUser(Long userId, UserUpdateRequest userUpdateRequest) {
         String password = userUpdateRequest.getPassword();
 
-        userEntity.updateUserInfo(email, password);
+        // +고유번호 존재 검사
+        UserEntity userEntity = userRepository.findById(userId)
+                .orElseThrow(RuntimeException::new);
+
+        userEntity.updateUserInfo(password);
     }
 
-    public void deleteUser(String email){
-        UserEntity userEntity = userRepository.findByEmail(email);
-
-        if (userEntity == null) {
-            throw new IllegalArgumentException();
-        }
+    public void deleteUser(Long userId){
+        // +고유번호 존재 검사
+        UserEntity userEntity = userRepository.findById(userId)
+                .orElseThrow(RuntimeException::new);
 
         userRepository.delete(userEntity);
     }
