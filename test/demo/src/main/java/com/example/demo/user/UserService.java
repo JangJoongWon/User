@@ -22,7 +22,7 @@ public class UserService {
     private final BCryptPasswordEncoder encoder;
 
     private String secretKey = "secretKey";
-    private Long expireTimeMs = 1000 * 60 * 60l * 5; // 토큰 만료시간 : 5시간
+    private Long expireTimeMs = 1000 * 60l * 5 * 60; // 토큰 만료시간 : 5시간
 
     public void saveUser(UserCreateRequest userCreateRequest) {
         String email = userCreateRequest.getEmail();
