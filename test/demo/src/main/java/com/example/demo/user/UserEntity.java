@@ -17,11 +17,14 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId = null;
 
-    @Column(nullable = false, length = 255, name = "email", unique = true)
+    @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false, length = 255, name = "password")
+    @Column(nullable = false)
     private String password;
+
+    @Column(nullable = false, name = "refresh_token")
+    private String refreshToken;
 
     public UserEntity(String email, String password) {
         if (email == null || email.isBlank()) {
@@ -38,5 +41,9 @@ public class UserEntity {
 
     public void updateUserInfo(String password) {
         this.password = password;
+    }
+
+    public void updateRefreshToken(String refreshtoken) {
+        this.refreshToken = refreshtoken;
     }
 }

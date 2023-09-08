@@ -1,5 +1,6 @@
 package com.example.demo.user;
 
+import com.example.demo.jwt.UserLoginResponse;
 import com.example.demo.user.dto.UserCreateRequest;
 import com.example.demo.user.dto.UserListResponse;
 import com.example.demo.user.dto.UserLoginRequest;
@@ -24,9 +25,9 @@ public class UserController {
     }
 
     @PostMapping("login")
-    public ResponseEntity<String> login(@RequestBody UserLoginRequest userLoginRequest) {
-        String token = userService.login(userLoginRequest);
-        return ResponseEntity.ok().body(token);
+    public ResponseEntity<UserLoginResponse> login(@RequestBody UserLoginRequest userLoginRequest) {
+        UserLoginResponse userLoginResponse = userService.login(userLoginRequest);
+        return ResponseEntity.ok().body(userLoginResponse);
     }
 
     @GetMapping

@@ -1,4 +1,4 @@
-package com.example.demo.config.Jwt;
+package com.example.demo.jwt;
 
 import io.jsonwebtoken.*;
 
@@ -11,8 +11,9 @@ public class JwtUtil {
                 .getBody().get("userId", Long.class);
     }
 
-//    public static boolean isExpired(String token, String secretKey) {
-//        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token)
+    // parseClaimsJws(token) 부분에서 ExpiredJwtException 예외가 발생해서 refreshToken 구현에 의미가 없는 함수가 되어버림
+//    public static boolean isExpired(String token, String secretAccessKey) {
+//        return Jwts.parser().setSigningKey(secretAccessKey).parseClaimsJws(token)
 //                .getBody().getExpiration().before(new Date());
 //    }
 
@@ -28,21 +29,27 @@ public class JwtUtil {
                 .compact();
     }
 
+//    public static boolean isExpired(String token, String secretAccessKey) {
+//        return Jwts.parser().setSigningKey(secretAccessKey).parseClaimsJws(token)
+//                .getBody().getExpiration().before(new Date());
+//    }
+
     public static boolean validateToken(String token, String secretKey) {
         try {
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             return true;
         } catch (SecurityException | MalformedJwtException e) {
-            System.out.println("잘못된 JWT 서명입니다.");
+            System.out.println("Wrong JWT sign");
             throw new RuntimeException();
         } catch (ExpiredJwtException e) {
-            System.out.println("만료된 JWT 토큰입니다.");
-            throw new RuntimeException();
+            System.out.println("Expired JWT");
+//            throw new RuntimeException();
+            throw new JwtException("Expired JWT");
         } catch (UnsupportedJwtException e) {
-            System.out.println("지원되지 않는 JWT 토큰입니다.");
+            System.out.println("Unsupported JWT");
             throw new RuntimeException();
         } catch (IllegalArgumentException e) {
-            System.out.println("JWT 토큰이 잘못되었습니다.");
+            System.out.println("Illegal JWT");
             throw new RuntimeException();
         }
     }
