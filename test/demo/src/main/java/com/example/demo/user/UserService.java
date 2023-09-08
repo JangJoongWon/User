@@ -1,6 +1,7 @@
 package com.example.demo.user;
 
-import com.example.demo.config.Jwt.JwtUtil;
+import com.example.demo.jwt.JwtUtil;
+import com.example.demo.jwt.UserLoginResponse;
 import com.example.demo.user.dto.UserCreateRequest;
 import com.example.demo.user.dto.UserListResponse;
 import com.example.demo.user.dto.UserLoginRequest;
@@ -21,8 +22,10 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder encoder;
 
-    private String secretKey = "secretKey";
-    private Long expireTimeMs = 1000 * 60l * 5 * 60; // 토큰 만료시간 : 5시간
+    private String secretAccessKey = "secretAccessKey";
+    private String secretRefreshKey = "secretRefreshKey";
+    private Long expireAccessTimeMs = 1000 * 60l * 1 * 1; // access 토큰 만료시간 : 1분
+    private Long expireRefreshTimeMs = 1000 * 60l * 24 * 60 * 14; // refresh 토큰 만료시간 : 2주일
 
     public void saveUser(UserCreateRequest userCreateRequest) {
         String email = userCreateRequest.getEmail();
@@ -39,7 +42,7 @@ public class UserService {
         userRepository.save(userEntity);
     }
 
-    public String login(UserLoginRequest userLoginRequest) {
+    public UserLoginResponse login(UserLoginRequest userLoginRequest) {
         String email = userLoginRequest.getEmail();
         String password = userLoginRequest.getPassword();
 
@@ -52,9 +55,16 @@ public class UserService {
             throw new RuntimeException();
         }
 
-        String token = JwtUtil.createToken(userEntity.getUserId(), secretKey, expireTimeMs);
+        // token 생성
+        String accessToken = JwtUtil.createToken(userEntity.getUserId(), secretAccessKey, expireAccessTimeMs);
+        String refreshToken = JwtUtil.createToken(userEntity.getUserId(), secretRefreshKey, expireRefreshTimeMs);
 
-        return token;
+        // refreshToken을 DB에 저장
+        userEntity.updateRefreshToken(refreshToken);
+
+        UserLoginResponse userLoginResponse = new UserLoginResponse(accessToken, refreshToken);
+
+        return userLoginResponse;
     }
 
     public List<UserListResponse> getUsers() {
@@ -67,7 +77,7 @@ public class UserService {
     public void updateUser(Long userId, UserUpdateRequest userUpdateRequest) {
         String password = userUpdateRequest.getPassword();
 
-        // +고유번호 존재 검사
+        // userId 존재 검사
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(RuntimeException::new);
 
@@ -75,7 +85,7 @@ public class UserService {
     }
 
     public void deleteUser(Long userId){
-        // +고유번호 존재 검사
+        // userId 존재 검사
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(RuntimeException::new);
 

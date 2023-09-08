@@ -1,6 +1,7 @@
 package com.example.demo.config;
 
-import com.example.demo.config.Jwt.JwtFilter;
+import com.example.demo.jwt.JwtExceptionFilter;
+import com.example.demo.jwt.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 @EnableWebSecurity
 public class SecurityConfig {
-    private String secretKey = "secretKey";
+    private String secretAccessKey = "secretAccessKey";
 
     @Bean
     public BCryptPasswordEncoder encoder() {
@@ -38,7 +39,8 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .addFilterBefore(new JwtFilter(secretKey), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtFilter(secretAccessKey), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtExceptionFilter(), JwtFilter.class)
                 .build();
     }
 }
