@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.security.SecurityProperties;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "user")
+@Table(name = "users")
 public class UserEntity {
 
     @Id
@@ -23,7 +23,7 @@ public class UserEntity {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false, name = "refresh_token")
+    @Column(name = "refresh_token")
     private String refreshToken;
 
     public UserEntity(String email, String password) {

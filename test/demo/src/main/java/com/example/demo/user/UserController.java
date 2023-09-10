@@ -30,6 +30,12 @@ public class UserController {
         return ResponseEntity.ok().body(userLoginResponse);
     }
 
+    @PostMapping("refresh")
+    public ResponseEntity<String> autoLogin(@RequestBody String refreshToken) {
+        String accessToken = userService.autoLogin(refreshToken);
+        return ResponseEntity.ok().body(accessToken);
+    }
+
     @GetMapping
     public ResponseEntity<List<UserListResponse>> getUsers() {
         return ResponseEntity.ok().body(userService.getUsers());

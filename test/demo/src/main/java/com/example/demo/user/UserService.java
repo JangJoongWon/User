@@ -6,10 +6,13 @@ import com.example.demo.user.dto.UserCreateRequest;
 import com.example.demo.user.dto.UserListResponse;
 import com.example.demo.user.dto.UserLoginRequest;
 import com.example.demo.user.dto.UserUpdateRequest;
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -65,6 +68,44 @@ public class UserService {
         UserLoginResponse userLoginResponse = new UserLoginResponse(accessToken, refreshToken);
 
         return userLoginResponse;
+    }
+
+    public String autoLogin(String refreshToken) {
+
+        // token을 보내지 않으면 block
+        if (!StringUtils.hasText(refreshToken) || !refreshToken.startsWith(("Bearer "))) {
+            System.out.println(refreshToken);
+            return "유효하지 않은 토큰입니다.";
+        }
+
+        // token에서 Bearer분리하기
+        String token = refreshToken.split(" ")[1];
+
+        // token 유효성 검사
+        try {
+            if (!StringUtils.hasText(token)) {
+                return "유효하지 않은 토큰입니다.";
+            }
+            JwtUtil.validateToken(token, secretRefreshKey);
+        } catch (JwtException e) {
+            return "재로그인이 필요합니다.";
+        }
+
+        // token에서 userId 꺼내기
+        Long userId = JwtUtil.getId(token, secretRefreshKey);
+
+        UserEntity userEntity = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException());
+
+        // refresh token이 DB에 저장된 값과 같은지 확인
+        if (!userEntity.getRefreshToken().equals(token)) {
+            return "토큰이 일치하지 않습니다.";
+        }
+
+        // token 생성
+        String accessToken = JwtUtil.createToken(userEntity.getUserId(), secretAccessKey, expireAccessTimeMs);
+
+        return accessToken;
     }
 
     public List<UserListResponse> getUsers() {
