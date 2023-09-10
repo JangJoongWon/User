@@ -11,12 +11,6 @@ public class JwtUtil {
                 .getBody().get("userId", Long.class);
     }
 
-    // parseClaimsJws(token) 부분에서 ExpiredJwtException 예외가 발생해서 refreshToken 구현에 의미가 없는 함수가 되어버림
-//    public static boolean isExpired(String token, String secretAccessKey) {
-//        return Jwts.parser().setSigningKey(secretAccessKey).parseClaimsJws(token)
-//                .getBody().getExpiration().before(new Date());
-//    }
-
     public static String createToken(Long userId, String key, long expireTimeMs) {
         Claims claims = Jwts.claims();
         claims.put("userId", userId);
@@ -43,7 +37,6 @@ public class JwtUtil {
             throw new RuntimeException();
         } catch (ExpiredJwtException e) {
             System.out.println("Expired JWT");
-//            throw new RuntimeException();
             throw new JwtException("Expired JWT");
         } catch (UnsupportedJwtException e) {
             System.out.println("Unsupported JWT");

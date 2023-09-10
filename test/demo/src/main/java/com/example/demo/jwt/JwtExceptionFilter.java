@@ -21,6 +21,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
         try {
             filterChain.doFilter(request, response);
         } catch (JwtException e) {
+            // 현재는 Expired만 커스텀 했지만 다른 예외도 커스텀 할 것.
             setErrorResponse(HttpStatus.UNAUTHORIZED, response, e);
         }
     }

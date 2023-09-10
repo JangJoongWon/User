@@ -34,6 +34,7 @@ public class SecurityConfig {
 //                                .requestMatchers("api/v1/users/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "api/v1/users").permitAll()
                                 .requestMatchers(HttpMethod.POST, "api/v1/users/login").permitAll()
+                                .requestMatchers(HttpMethod.POST, "api/v1/users/refresh").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

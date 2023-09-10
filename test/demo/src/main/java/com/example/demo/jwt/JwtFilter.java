@@ -1,11 +1,14 @@
 package com.example.demo.jwt;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,8 +39,11 @@ public class JwtFilter extends OncePerRequestFilter {
         // token에서 Bearer분리하기
         String token = authorization.split(" ")[1];
 
-        // token Expired 되었는지 여부 // token 유효성 검사에서 확인함
-//        if (JwtUtil.isExpired(token, secretAccessKey)) {
+//        // token Expired 되었는지 여부
+//        try {
+//            Jwts.parser().setSigningKey(secretAccessKey).parseClaimsJws(token);
+//        } catch (ExpiredJwtException e) {
+//            response.setStatus(HttpStatus.UNAUTHORIZED.value());
 //            filterChain.doFilter(request, response);
 //            return;
 //        }
